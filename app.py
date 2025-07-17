@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from retriever import get_prerequisites, get_courses_with_prereq, get_all_courses
+import string
 
 app = FastAPI()
 
@@ -12,6 +13,8 @@ async def chat(request: Request):
     if "prerequisite" in question and "for" in question:
         # e.g., "What are the prerequisites for CS 180?"
         course_code = question.split("for")[-1].strip().upper()
+        # Remove punctuation (like '?')
+        course_code = course_code.strip(string.punctuation + " ")
         prereqs = get_prerequisites(course_code)
         if prereqs:
             return {"answer": f"Prerequisites for {course_code}: " + ", ".join([f"{c['code']} ({c['name']})" for c in prereqs])}
